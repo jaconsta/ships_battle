@@ -1,0 +1,9 @@
+.grid-container {
+  display: flex;
+}
+.grid-item {
+  padding: 5px 6px;
+  border: 1px solid orange;
+  background-color: lightblue;
+  font-size: .5em;
+}
