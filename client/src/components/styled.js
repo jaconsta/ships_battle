@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components'
+import styled, { keyframes, css } from 'styled-components'
 
 export const GameMap = styled.div`
   width: 48.5%;
@@ -34,6 +34,11 @@ export const SeaCell = styled(MapCell)`
   &:hover {
     border: 1px solid #fff;
   }
+  ${props => props.active && css `
+    background-color: #c0ca33;
+    animation: none;
+    border: 1px solid #c0ca33;
+  `}
 `
 
 export const ShipCell = styled(MapCell)`
