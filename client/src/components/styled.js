@@ -39,6 +39,11 @@ export const SeaCell = styled(MapCell)`
     animation: none;
     border: 1px solid #c0ca33;
   `}
+  ${props => props.isShipCell && css `
+    background-color: red;
+    animation: none;
+    border: 1px solid red;
+  `}
 `
 
 export const ShipCell = styled(MapCell)`

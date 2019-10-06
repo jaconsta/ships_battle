@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import jsonify, request
 
 from ships import game_map
 
@@ -6,6 +6,13 @@ def register_routes(app):
     @app.route('/game/', methods=['GET'])
     def get_map():
         return jsonify({ 'map': game_map })
+
+    @app.route('/game/ships/', methods=['POST'])
+    def sumbit_user_ships():
+        body = request.get_json()
+        print(body)
+
+        return jsonify({ 'map': 'created' }), 201
 
 # @app.route('/xl-spaceship/protocol/game/new', methods=['POST'])
 # def create_game():
