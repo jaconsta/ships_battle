@@ -2,13 +2,17 @@ import React from 'react';
 
 import './App.css';
 
-import Content from 'components/Content'
+import AppRouter from 'components'
+import { StateProvider } from 'state'
+import reducer, { initialState } from 'state/reducer'
 
 function App() {
   return (
-    <div className="App">
-      <Content />
-    </div>
+    <StateProvider initialState={initialState} reducer={reducer}>
+      <div className="App">
+        <AppRouter />
+      </div>
+    </StateProvider>
   );
 }
 

@@ -1,5 +1,23 @@
 import styled, { keyframes, css } from 'styled-components'
 
+import Paper from '@material-ui/core/Paper'
+
+export const IntroPaper = styled(Paper)`
+  width: 800px;
+  margin: 40px auto;
+`
+
+export const IntroOptions = styled.div`
+  display: flex;
+  flex-flow: column;
+  h6 {
+    margin: 10px 0;
+  }
+  span {
+    margin: 20px 0;
+  }
+`
+
 export const GameMap = styled.div`
   width: 48.5%;
   margin: auto;

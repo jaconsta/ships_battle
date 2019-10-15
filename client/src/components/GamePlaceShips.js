@@ -8,8 +8,10 @@ import Button from '@material-ui/core/Button'
 
 import Title from './Title'
 import { GameMap, MapRow, SeaCell, ShipCell, MissedShotCell, ShipHitCell } from './styled'
+import { SET_USER_GAME_DATA } from 'state/reducer'
+import { useStateValue } from 'state'
 
-import { getGameBoard, submitPlayerGameShips } from 'services/gameBoard'
+import { submitPlayerGameShips } from 'services/gameBoard'
 
 // const convertToHext = num => (num >>> 0).toString(16)
 const defaultShipSize = 2
@@ -62,7 +64,7 @@ PaintMapCells.defaultProps = {
   onClickSea: () => {},
 }
 
-const Content = () => {
+const GamePlaceShips = props => {
   const [ map, setMap ] = useState([])
   const [ loadingMap, setLoadingMap ] = useState(true);
   const [ errorLoading, setErrorLoading ] = useState(false);
@@ -71,6 +73,8 @@ const Content = () => {
   const [ selectedShipSize, setSelectedShipSize ] = useState(`${defaultShipSize}`)
   const [ placedShips, setPlacedShips ] = useState([])
   const [ placedShipData, setPlacedShipData ] = useState({})
+
+  const [ { gameData }, dispatch] = useStateValue()
 
   const chooseShipSize = shipId => () => setSelectedShipSize(shipId)
   const highlightShip = (x, y) => () => setSelectedCell([x, y])
@@ -84,7 +88,7 @@ const Content = () => {
       .value()
   }
 
-  const rotatePlaceShip = () => setShipRotation(shipRotation === 'vertical' ? 'horizontal' : 'vertical')
+  const rotatePlaceShip = props => setShipRotation(shipRotation === 'vertical' ? 'horizontal' : 'vertical')
   const placeShip = (row, column) => () => {
     const [ox, oy] = shipRotation === 'vertical' ? [1, 0] : [0, 1]
     const shipCells = _.map(_.range(shipSizes[selectedShipSize].size), (index) => ({ x: row+(index*ox), y: column+(index*oy) }))
@@ -115,9 +119,12 @@ const Content = () => {
 
   const isMapEmpty = _.isEmpty(map)
   useEffect(() => {
-    getGameBoard()
-      .then(({ data }) => { setMap(data.map); setLoadingMap(false)})
-      .catch(err => { console.log('eee', err); setErrorLoading(true) })
+    if (_.isEmpty(gameData)) return props.history.push('/')
+    setMap(gameData.map)
+    setLoadingMap(false)
+    // getGameBoard()
+    //   .then(({ data }) => { setMap(data.map); setLoadingMap(false)})
+    //   .catch(err => { console.log('eee', err); setErrorLoading(true) })
   }, [isMapEmpty])
 
   if (errorLoading) return <h3>Error loading the map</h3>
@@ -125,16 +132,22 @@ const Content = () => {
 
   const submitPlacedShips = async () => {
     try {
-      const { data } = await submitPlayerGameShips(placedShipData)
+      const { data } = await submitPlayerGameShips(placedShipData, gameData.token)
       console.log(data)
+      if (data.message !== 'map created') console.log('invalid message', data)
+      dispatch({ type: SET_USER_GAME_DATA, gameData: { map: data.map } })
+      setMap(data.map)
+      props.history.push('/game')
     } catch (err) {
       console.log(err)
+      setErrorLoading(true)
     }
   }
 
   return (
     <div>
       <Title />
+      <h3>Code: {gameData.code} </h3>
       <GameMap>
         {
           map.map( (row, x) => (
@@ -162,4 +175,8 @@ const Content = () => {
   )
 }
 
-export default Content
+GamePlaceShips.propTypes = {
+  history: PropTypes.object,
+}
+
+export default GamePlaceShips
