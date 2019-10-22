@@ -82,8 +82,6 @@ def register_routes(app):
 
         # Game turn validation
         # Are this for attack?
-        if 'game_round' in game_data and game_data['game_round'] == 'finished':
-            return jsonify({ 'message': 'game has ended '})
         # if game_data['current_turn'] != player_id:
         #     return jsonify({ 'message': 'Not your turn' }),  400
 
@@ -97,14 +95,16 @@ def register_routes(app):
         if 'current_map' not in request_oponent:
             return jsonify({ 'map': request_player['current_map'], 'oponent': { 'message': 'waiting for submission' } })
 
-        # oponent_map = map(lambda x: map(lambda y: '*' if y == 's' else y, x), request_oponent['current_map'])
-        # opponent_map = map(process_map_rows, request_oponent['current_map'])
         opponent_map = get_opponent_map(request_oponent['current_map'])
-        return jsonify({
+        response = {
             'map': request_player['current_map'],
             'turn': game_data['current_turn'],
-            'oponent': { 'map': opponent_map }  # list(opponent_map) }
-        })
+            'oponent': { 'map': opponent_map }
+        }
+        if 'game_round' in game_data and game_data['game_round'] == 'finished':
+            response.update({ 'message': 'game has ended', 'winner': game_data['winner']})
+
+        return jsonify(response)
 
 
     @app.route('/game/new/', methods=['POST'])
@@ -253,6 +253,19 @@ def register_routes(app):
         # Update player attacks list
         player_map = game_data[player_id]['attacks']
         player_map.append(move)
+
+        # Verify if the game has finished, any ships left
+        ships_left = list(filter(lambda cell: 's' in cell, opponent_map))
+        if not ships_left:
+            game_data['game_round'] = 'finished'
+            game_data['current_turn'] = 'finished'
+            game_data['winner'] = player_id
+            # The game has finished, return the response to winner
+            return jsonify({
+                'turn': game_data['current_turn'],
+                'oponent': { 'map': cleaned_opponent_map },
+                'winner': game_data['winner']
+            })
 
         # Update the Game status
         game_data['current_turn'] = opponent_id

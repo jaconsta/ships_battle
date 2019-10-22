@@ -17,6 +17,24 @@ const gameMap = [
   ['*', 's'],
 ]
 
+const GameFinished = props => {
+  const {
+    turn,
+    winner,
+  } = props.gameData
+  if (turn !== 'finished') return null
+
+  return (
+    <div>
+      This game has finished. Winner <span>{winner}</span>
+    </div>
+  )
+}
+
+GameFinished.propTypes = {
+  gameData: PropTypes.object,
+}
+
 const OpponentGameMap = props => {
   const {
     opponent = {},
@@ -80,6 +98,7 @@ const GameDevelopment = props => {
       <Title />
       <h3>Code: {gameData.code} </h3>
       <h4>{myTurn ? 'My' : 'Opponents'} Turn</h4>
+      <GameFinished gameData={gameData} />
       <div>
         <h4>Your map</h4>
         <GameMap>
@@ -90,8 +109,8 @@ const GameDevelopment = props => {
                     <GameMapCell
                       key={y}
                       cellType={cell}
-                      onHover={()=> {} /*highlightShip(x, y)*/}
-                      onClickSea={()=> {} /*placeShip(x, y) */}
+                      onHover={_.noop}
+                      onClickSea={_.noop}
                     />
                   ))
                 }
