@@ -13,4 +13,5 @@ register_routes(app)
 
 if __name__ == "__main__":
     port = os.getenv('PORT', '8080')
-    app.run(port=port)
+    host = os.getenv('HOST', '0.0.0.0')
+    app.run(host=host, port=port)
