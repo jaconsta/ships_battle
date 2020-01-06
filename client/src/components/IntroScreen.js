@@ -13,6 +13,79 @@ const NONE = null
 const START = 'start'
 const JOIN = 'join'
 
+const Title = () => (
+  <IntroPaper>
+    <Typography variant="h1">Ships at war</Typography>
+    <Typography variant="h2">Wellcome</Typography>
+  </IntroPaper>
+)
+
+const DefaultOption = props => (
+  <IntroPaper>
+    <IntroOptions>
+      <Typography variant="subtitle1">Select one</Typography>
+      <Button variant="contained" color="primary" onClick={props.selectOption(START)}>Create new game</Button>
+      <Button variant="contained" color="secondary" onClick={props.selectOption(JOIN)}>Join one</Button>
+    </IntroOptions>
+  </IntroPaper>
+)
+const NewGameOption = props => (
+  <IntroPaper>
+    <IntroOptions>
+      <Typography variant="subtitle1">Your name</Typography>
+      <TextField value={props.playerName} onChange={props.updateUserData('playerName')} />
+      <Button variant="contained" color="primary" onClick={props.createNewGame}>Create</Button>
+      <Button variant="contained" color="secondary" onClick={props.optionBack}>Back</Button>
+    </IntroOptions>
+  </IntroPaper>
+)
+const JoinGameOption = props => (
+  <IntroPaper>
+    <IntroOptions>
+      <Typography variant="subtitle1">Room code</Typography>
+      <TextField value={props.gameCode} onChange={props.updateUserData('gameCode')} />
+      <Typography variant="subtitle1">Your name</Typography>
+      <TextField value={props.playerName} onChange={props.updateUserData('playerName')} />
+      <Button variant="contained" color="primary" onClick={props.joinNewGame}>Join</Button>
+      <Button variant="contained" color="secondary" onClick={props.optionBack}>Back</Button>
+    </IntroOptions>
+  </IntroPaper>
+)
+
+const RenderSelectedOption = props => {
+  const {
+    selectOption,
+    selectedOption,
+    gameCode,
+    updateUserData,
+    playerName,
+    createNewGame,
+    joinNewGame,
+    optionBack,
+  } = props
+
+  if(selectedOption===START) return (
+    <NewGameOption
+      gameCode={gameCode}
+      playerName={playerName}
+      updateUserData={updateUserData}
+      createNewGame={createNewGame}
+      optionBack={optionBack}
+    />
+  )
+  if(selectedOption===JOIN) return (
+    <JoinGameOption
+      gIntroPaperameCode={gameCode}
+      updateUserData={updateUserData}
+      playerName={playerName}
+      joinNewGame={joinNewGame}
+      optionBack={optionBack}
+    />
+  )
+  return <DefaultOption selectOption={selectOption}/>
+}
+
+
 const IntroScreen = props => {
   const [ selectedOption, setSelectedOption ] = useState(NONE)
   const [ userData, setUserData ] = useState({})
@@ -39,56 +112,22 @@ const IntroScreen = props => {
     cleanUserData()
     selectOption(NONE)()
   }
-  const DefaultOption = () => (
-    <IntroPaper>
-      <IntroOptions>
-        <Typography variant="subtitle1">Select one</Typography>
-        <Button variant="contained" color="primary" onClick={selectOption(START)}>Create new game</Button>
-        <Button variant="contained" color="secondary" onClick={selectOption(JOIN)}>Join one</Button>
-      </IntroOptions>
-    </IntroPaper>
-  )
-  const NewGameOption = () => (
-    <IntroPaper>
-      <IntroOptions>
-        <Typography variant="subtitle1">Your name</Typography>
-        <TextField value={playerName} onChange={updateUserData('playerName')} />
-        <Button variant="contained" color="primary" onClick={createNewGame}>Create</Button>
-        <Button variant="contained" color="secondary" onClick={optionBack}>Back</Button>
-      </IntroOptions>
-    </IntroPaper>
-  )
-  const JoinGameOption = () => (
-    <IntroPaper>
-      <IntroOptions>
-        <Typography variant="subtitle1">Room code</Typography>
-        <TextField value={gameCode} onChange={updateUserData('gameCode')} />
-        <Typography variant="subtitle1">Your name</Typography>
-        <TextField value={playerName} onChange={updateUserData('playerName')} />
-        <Button variant="contained" color="primary" onClick={joinNewGame}>Join</Button>
-        <Button variant="contained" color="secondary" onClick={optionBack}>Back</Button>
-      </IntroOptions>
-    </IntroPaper>
 
-  )
-  const RenderSelectedOption = () => {
-    // This conditionals seems to be causing an out-focus issue on inputs
-    if(selectedOption===START) return <NewGameOption />
-    if(selectedOption===JOIN) return <JoinGameOption />
-    return <DefaultOption />
-  }
-
-  const Title = () => (
-    <IntroPaper>
-      <Typography variant="h1">Ships at war</Typography>
-      <Typography variant="h2">Wellcome</Typography>
-    </IntroPaper>
-  )
+  const getNewGameFieldProps = () => ({
+    selectOption,
+    selectedOption,
+    gameCode,
+    updateUserData,
+    playerName,
+    createNewGame,
+    joinNewGame,
+    optionBack,
+  })
 
   return (
     <div>
       <Title />
-      <RenderSelectedOption />
+      <RenderSelectedOption {...getNewGameFieldProps()} />
     </div>
   )
 }
